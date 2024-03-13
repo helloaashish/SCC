@@ -67,6 +67,17 @@ void color(const char *selected){
 }
 // ******************************************************************************
 
+
+void print_Hub_info(MetaNode*& MN_List,int node, int hubsize)
+{
+    printf("\n");
+    for (int i = 0; i<hubsize; i++)
+    {
+        printf("%d -> %d,",i,MN_List[node].Hub_info[i]);
+    }
+    printf("\n");
+}
+
 // ******************************************************************************
 void create_graph(int* src, int* dest, int* wt_list, int n, int m, Graph* graph){
     // if (wt_list->size() == 0){wt_list->resize(int(edge_list->size()),1);}
@@ -235,8 +246,8 @@ void convert_changes(Graph* g, Graph* g_meta, vector<int_int>* inserts,vector<in
     if (m_src == m_dest){
         insert_status[i] = true;} //inserted within same SCC
     else{
-        #pragma omp atomic
-            count_i++;
+        // #pragma omp atomic
+        //     count_i++;
 
         //different scc insertion
         // mark status false indicating to be procesased further
@@ -262,72 +273,91 @@ void convert_changes(Graph* g, Graph* g_meta, vector<int_int>* inserts,vector<in
     }//end of for
 
 
-    // #pragma omp parallel for num_threads(p) schedule(dynamic)
-    // for(int i = 0; i<deletes->size(); i++)
-    // {
-    //     int src = deletes->at(i).first;
-    //     int dest =  deletes->at(i).second;
+    #pragma omp parallel for num_threads(p) schedule(dynamic)
+    for(int i = 0; i<deletes->size(); i++)
+    {
+        int src = deletes->at(i).first;
+        int dest =  deletes->at(i).second;
 
-    //     int m_src = sccMAP->at(SCCx->at(src));
-    //     int m_dest = sccMAP->at(SCCx->at(dest));
+        int m_src = sccMAP->at(SCCx->at(src));
+        int m_dest = sccMAP->at(SCCx->at(dest));
 
-    //     //         // RENAME THEM
-    //     // deletes->at(i).first = m_src;
-    //     // deletes->at(i).second = m_dest;
+        //         // RENAME THEM
+        deletes->at(i).first = m_src;
+        deletes->at(i).second = m_dest;
 
-    //     if (m_src == m_dest){ //within scc deletion
-    //         //check key edge, if not key edge, delete and mark done for the delete
-    //         int_int children_range = g->get_children(src);
-    //         for (int c = children_range.first; c<children_range.second; c++){
-    //             if (dest == g->f_col_idx[c]){
-    //                 if (g->edge_wt[c] == -1) {
-    //                     delete_status[i] = false;
-    //                   #pragma omp atomic
-    //                     count_d++;} // key edge deletion mark false
+        if (m_src == m_dest){ //within scc deletion
+            //check key edge, if not key edge, delete and mark done for the delete
+            int_int children_range = g->get_children(src);
+            for (int c = children_range.first; c<children_range.second; c++){
+                if (dest == g->f_col_idx[c]){
+                    if (g->edge_wt[c] == -1) {
+                        delete_status[i] = false;
+                    //   #pragma omp atomic
+                    //     count_d++;
+                        } // key edge deletion mark false
                     
-    //                 if (g->edge_wt[c] == 1) 
-    //                 {
-    //                     delete_status[i] = true; // delete completed because of non-key edge deletion
-    //                     g->edge_wt[c] == 0;
-    //                 }
+                    if (g->edge_wt[c] == 1) 
+                    {
+                        delete_status[i] = true; // delete completed because of non-key edge deletion
+                        g->edge_wt[c] == 0;
+                    }
 
-    //                 if (g->edge_wt[c] == 0)  //duplicate deletion
-    //                 {
-    //                     delete_status[i] = true; // delete completed because of non-key edge deletion
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     //Inter SCC deletion
-    //     // SINCHRONIZation Required 
-    //     if (m_src != m_dest)
-    //     {
-    //         delete_status[i] = true;
-    //         int_int c_range = g_meta->get_children(m_src);
-    //        for (int c = c_range.first; c<c_range.second; c++)
-    //        {
-    //         if (m_dest == g_meta->f_col_idx[c]){
-    //             #pragma omp atomic
-    //             g_meta->edge_wt--; // can this be done????
-    //         }
-    //        }
+                    if (g->edge_wt[c] == 0)  //duplicate deletion
+                    {
+                        delete_status[i] = true; // delete completed because of non-key edge deletion
+                    }
+                }
+            }
+        }
+        //Inter SCC deletion
+        // Weight processing
+        if (m_src != m_dest)
+        {
+            delete_status[i] = true;
+        //     int_int c_range = g_meta->get_children(m_src);
+        //    for (int c = c_range.first; c<c_range.second; c++)
+        //    {
+        //        printf("Processing Child %d for src %d\n", g_meta->f_col_idx[c],src);
+        //     if (m_dest == g_meta->f_col_idx[c]){
 
-    //     }
-    // }
+        //         g_meta->edge_wt[c]--; // can this be done????
+        //     }
+        //    }
+
+       }
+    }
 
     printf("Inserts Unhandled = %d , Deletes Unhandled=d", count_i);
 
 }
 // ******************************************************************************
 
+
+
 // ******************************************************************************
-int_int action_from_hub_values(MetaNode*& MN_list,int src,int dest,int*& Hubs,int hubsize){
+void copy_hubInfo(int*& from, int*& to, int hubsize){
+    for (int i = 0; i< hubsize; i++){
+        if (from[i] == 5){to[i] = 5;}
+        else if(to[i] == 0){
+            to[i] = from[i];
+        }
+    }
+}
+// ******************************************************************************
+
+
+
+// ******************************************************************************
+int_int action_from_hub_values(MetaNode*& MN_list,int from,int to, int*& Hubs,int hubsize){
     int_int return_status;
     return_status.first = 3; //differ status
     return_status.second = -1; // reference hub
     // color("red");
     // printf("\n\n Finding Action %d -> %d\n", src, dest);
     // color("reset");
+    int src = MN_list[from].currentID;
+    int dest = MN_list[to].currentID;
 
     // NOTE: Further checking required because multiple hubs may be found with different return values. "Make precedence"
     // #pragma omp parallel for num_threads(p) schedule(guided)
@@ -475,10 +505,124 @@ void handle_action_initial(MetaNode*& MN_list, int*& Hubs, int hubsize, int idx,
 
 }
 // ******************************************************************************
+// for any inserts, if the case is not handled, they share the +ve, -ve info to each others, 
+void share_hubInfo(MetaNode*& MN_list, int src, int dest, bool*& propagate_changed_up, bool*& propagate_changed_down, int hubsize){
+    int src_root = MN_list[src].currentID;
+    int dest_root = MN_list[dest].currentID;
+    // printf("Sharing Hub info between %d and %d\n", src_root, dest_root);
+    // print_Hub_info(MN_list, src_root, hubsize);
+    // print_Hub_info(MN_list, dest_root, hubsize);
+    //for all hubs
+    for (int h =0; h<hubsize; h++){
+        int s_h = MN_list[src_root].Hub_info[h];
+        int d_h = MN_list[dest_root].Hub_info[h] ;
 
+        //if sharing creates SCC 
+        if ((s_h == 1 || s_h == 5) && (d_h == 5 || d_h == -1)){
+            //scc created 
+            if (MN_list[src_root].h_idx < MN_list[dest_root].h_idx){
+                copy_hubInfo(MN_list[dest_root].Hub_info, MN_list[src_root].Hub_info, hubsize);
+                MN_list[dest_root].currentID = src_root;
+                MN_list[dest_root].h_idx = MN_list[src_root].h_idx;
+                propagate_changed_up[src_root] = true;
+                propagate_changed_down[src_root] = true;
+                return;
+            } // end if
+            else if(MN_list[src_root].h_idx > MN_list[dest_root].h_idx){
+                copy_hubInfo(MN_list[src_root].Hub_info, MN_list[dest_root].Hub_info, hubsize);
+                MN_list[src_root].currentID = dest_root;
+                MN_list[src_root].h_idx = MN_list[dest_root].h_idx;
+                propagate_changed_up[dest_root] = true;
+                propagate_changed_down[dest_root] = true;
+                return;
+            }//end else if
+
+        }//end if created scc during share
+
+        //TODO is update on all the neighbors necessary?
+        if(d_h  == 0 && s_h >0){
+            MN_list[dest_root].Hub_info[h] = 1;
+            propagate_changed_down[dest_root] = true;
+             }//end if copy 1 to destination
+
+        if (s_h == 0 && d_h <0){
+            MN_list[src_root].Hub_info[h] = -1;
+            propagate_changed_up[src_root] = true;
+            } // end if copy -1 to src
+
+    }// end for loop
+    // print_Hub_info(MN_list, src_root, hubsize);
+    // print_Hub_info(MN_list, dest_root, hubsize);
+}
 
 
 // ******************************************************************************
+
+void handle_action(MetaNode*& MN_list, int*& Hubs, int hubsize, int idx, int src, int dest, int_int action, bool*& status, int*& cases, int*& common_hub, bool*& propagate_changed_up, bool*& propagate_changed_down, int itr){
+   
+   int todo = action.first;
+   bool created = false;
+   int src_scc = MN_list[src].currentID;
+   int dest_scc = MN_list[dest].currentID;
+
+   if (todo == 1) //SCC will be created wrt hub
+   {
+    int hub_idx = action.second;
+    status[idx] = true; // mark completed
+    cases[idx] = 1; // created SCC 
+    common_hub[idx] = hub_idx;
+   }
+
+   else if (todo == 0) //SCC will not be created, path already exists
+   {
+    status[idx] = true; //completed
+    cases[idx] = 0;  // Not created SCC, path already existed
+    //Copy the hubinfo anyway?
+   }
+
+   else if (todo == -1)
+   {
+    status[idx] = false; // not resolved
+    cases[idx] = 2; //found common hub
+    common_hub[idx] = action.second;
+    if (itr == 0){
+    share_hubInfo(MN_list, src, dest,propagate_changed_up, propagate_changed_down,hubsize);
+    }//end if itr
+   } // end if todo -1
+
+   // change -5 & 5 as 1
+    else if (todo == -5 || todo == 5) // SCC will be created Hub to Ancestor or Successor to Hub
+    {
+        int hub_idx = action.second;
+        status[idx] = true; // Completed insertion
+        cases[idx] = 1;  // Created SCC
+        common_hub[idx]= hub_idx;
+
+    }
+
+    else if (todo == 25) // Inside same scc after merged
+    {
+        status[idx] = true;
+        cases[idx] = 1; // Created SCC
+        common_hub[idx]= action.second;
+
+    }
+
+    else // Zero for all values
+    {
+        status[idx] = false; // deffered
+        cases[idx] = 4;  // path product = 0 for all hhubs
+        if (itr == 0){
+        share_hubInfo(MN_list, src, dest,propagate_changed_up, propagate_changed_down,hubsize);
+        }
+        
+    }
+
+// IMPORTANT ISSUE
+// ADD THE NEW EDGES TO THE GRAPH ????
+
+}
+
 
 // ******************************************************************************
 
@@ -505,192 +649,8 @@ void update_new_hub_info(MetaNode*& MN_list, int node, int*& new_hub_info, bool 
 }
 // ******************************************************************************
 
-// ******************************************************************************
-//copied from previous vector implementation of merge scc; not using currently; 
-void merge_SCC(Graph* g_meta, MetaNode*& MN_list, int h,int*& Hubs,int hubsize, vector<int>* upstream, vector<int>* downstream)
-{
-    vector<int> nodes_scc;
-    nodes_scc.clear();
-    int* new_hub_info = new int[hubsize]{0}; // new hubinfo for all the nodes after converging
-    //BFS Datastructure
-    int num_metanodes = g_meta->node_count;
-    bool* visited = new bool[num_metanodes]{false};
-    int current_child, current_parent, s;
-    bool up = true;
-    stack<int> upStack(deque<int>(upstream->begin(), upstream->end()));
-    stack<int> downStack(deque<int>(downstream->begin(), downstream->end()));
-    while(!upStack.empty()){
-        // printf("Collecting upstack size %d\n",upStack.size());
-        s = upStack.top();
-        upStack.pop();
-        nodes_scc.push_back(s); //collect the nodes that is a part of new SCC
-        visited[s] = true; //mark visited
-        update_new_hub_info(MN_list, s, new_hub_info, up, hubsize);
-        //*** update_new_hub_info()  // change the hubinfo for the merged node s
-        //look for all neighbors and check the hub value
-        int_int children_range = g_meta->get_children(s);
-        for (int i = children_range.first; i<children_range.second; i++)
-        {
-            current_child = g_meta->f_col_idx[i];
-            // if children is not visited
-            // children reaches the hub meaning Hubinfo is -1 or 5 children is The  hub
-            if ((!visited[current_child]) && ((MN_list[current_child].Hub_info[h] == -1) || (MN_list[current_child].Hub_info[h] == 5)))
-            {
-                upStack.push(current_child);
-            } //end if
-        }//end for
-    }// end while
-
-    up = false;
-    while(!downStack.empty()){
-       s = downStack.top();
-       downStack.pop(); 
-       nodes_scc.push_back(s);
-       visited[s] = true; 
-        // printf("Collecting Downstack size %d\n",downStack.size());
-    update_new_hub_info(MN_list, s, new_hub_info, up, hubsize);
-    int_int parents_range = g_meta->get_parents(s);
-    for (int i = parents_range.first; i<parents_range.second; i++)
-    {
-        current_parent = g_meta->b_col_idx[i];
-        // if parent is not visited
-        // parent can be reached from the hub meaning Hubinfo is 1 or 5 parent is The  hub
-         if ((!visited[current_parent]) && ((MN_list[current_parent].Hub_info[h] == 1) || (MN_list[current_parent].Hub_info[h] == 5)))
-            {
-                downStack.push(current_parent); // add it to the list of
-            }//end if condition
-
-    }//end for loop
-
-    }//end while loop
-
-// Now since all the vectors have same SCC ID we can update their
-for (int c = 0; c < nodes_scc.size(); c++)
-    {
-        int changed_node = nodes_scc.at(c);
-        MN_list[changed_node].currentID = h;
-        color("red");
-        printf(" Node %d Changed to %d \n",changed_node, h);
-        color("reset");
-    }
-return;   
-
-}
-// ******************************************************************************
 
 
-// ******************************************************************************
-void copy_hubInfo(int*& from, int*& to, int hubsize){
-    for (int i = 0; i< hubsize; i++){
-        if (from[i] == 5){to[i] = 5;}
-        else if(to[i] == 0){
-            to[i] = from[i];
-        }
-    }
-}
-// ******************************************************************************
-
-
-// ******************************************************************************
-void merge_scc(Graph* g_meta, MetaNode*& MN_list, bool*& trimmed, int h, int*& Hubs, int hubsize, int src, int dest, bool*& visited, int*& num_common_hubs, bool& unique_hub_value){
-    int ref_hub = Hubs[h];
-    stack<int> dfsStack;
-    int s;
-    dfsStack.push(src);
-    while(!dfsStack.empty()){
-        s = dfsStack.top();
-        dfsStack.pop();
-        visited[s] = true;
-        MN_list[s].Hub_info[h] = 5; //mark as hub
-        // MN_list[s].is_hub = true;
-        MN_list[s].currentID = ref_hub;
-        //(!MN_list[s].is_hub) &&
-        if( (!MN_list[s].is_hub) && (unique_hub_value)){
-            unique_hub_value = false;
-            num_common_hubs[s] = num_common_hubs[s] + 1;
-        }
-
-        // Now we know s is part of new Hub; update the info for hub and s itself
-        for (int h_id = 0; h_id<hubsize; h_id++){
-            int current_hub_info = MN_list[ref_hub].Hub_info[h_id];
-            //if the ref_hub do not know about any hub (h_id) it copies the info form s
-            if(current_hub_info == 0){
-                 MN_list[ref_hub].Hub_info[h_id]  = MN_list[s].Hub_info[h_id]; 
-            }//end if
-            //if the ref_hub know the hub but the hub is now part of single SCC
-            else if(MN_list[s].Hub_info[h_id] == 5){
-                MN_list[ref_hub].Hub_info[h_id] = 5;
-            }
-        }//end for
-
-        int_int parent_range = g_meta->get_parents(s);
-        if(s != 69){
-        for (int p = parent_range.first; p<parent_range.second; p++){
-            int current_p = g_meta->b_col_idx[p];
-            //if current parent not visited, and goes to hub, or is hub  || (MN_list[current_p].Hub_info[h] == 5)
-            // if ((!trimmed[current_p]) && (!visited[current_p]) && (MN_list[current_p].Hub_info[h] == 1))
-            if ((!trimmed[current_p]) && (!visited[current_p]) && ((MN_list[current_p].Hub_info[h] == 1) || (MN_list[current_p].Hub_info[h] == 5)))
-            {
-                dfsStack.push(current_p);
-            } //end if
-            //if hub found do not push but process itself
-        }
-        }
-        else{
-            printf("Big Parent size for %d Number of parents %d reference Hub %d \n   ", s, g_meta->num_parents(s), ref_hub);
-        }
-
-
-    }
-
-    dfsStack.push(dest);
-    while(!dfsStack.empty()){
-        s = dfsStack.top();
-        dfsStack.pop();
-        visited[s] = true;
-        MN_list[s].Hub_info[h] = 5; //mark as hub
-        MN_list[s].currentID = ref_hub;
-        // (!MN_list[s].is_hub) && 
-        if((!MN_list[s].is_hub) &&  (unique_hub_value)){
-        unique_hub_value = false;
-        num_common_hubs[s] = num_common_hubs[s] + 1;
-        }
-        // Now we know s is part of new Hub; update the info for hub and s itself
-        for (int h_id = 0; h_id<hubsize; h_id++){
-            int current_hub_info = MN_list[ref_hub].Hub_info[h_id];
-            //if the ref_hub do not know about any hub (h_id) it copies the info form s
-            if(current_hub_info == 0){
-                 MN_list[ref_hub].Hub_info[h_id]  = MN_list[s].Hub_info[h_id]; 
-            }//end if
-            else if (MN_list[s].Hub_info[h_id] == 5){
-                MN_list[ref_hub].Hub_info[h_id] = 5;
-            }
-
-        }//end for
-
-        int_int children_range = g_meta->get_children(s);
-        if(s!= 69){
-        for (int c = children_range.first; c<children_range.second; c++){
-            int current_c = g_meta->b_col_idx[c];
-            //if current parent not visited, and goes to hub, or is hub || (MN_list[current_c].Hub_info[h] == 5)
-            //if ((!trimmed[current_c]) && (!visited[current_c]) && (MN_list[current_c].Hub_info[h] == -1))
-            if ((!trimmed[current_c]) && (!visited[current_c]) && ((MN_list[current_c].Hub_info[h] == -1)|| (MN_list[current_c].Hub_info[h] == 5)))
-            {
-                dfsStack.push(current_c);
-            } //end if
-        } // end for
-        }
-        else{
-            printf("Big Children size for %d Number of Children %d\n ", s, g_meta->num_childrens(s));
-        }
-
-    }
-
-    
-    return;
-
-
-}
 
 // ******************************************************************************
 int get_RootSCCID(MetaNode*& MN_list, int id){
@@ -704,8 +664,9 @@ int get_RootSCCID(MetaNode*& MN_list, int id){
 // ******************************************************************************
 
 // ******************************************************************************
-void merge_me(Graph* g_meta, MetaNode*& MN_list, bool*& trimmed, int h, int*& Hubs, int hubsize, int src, int dest, bool*& visited, int*& num_common_hubs){
+void merge_me(Graph* g_meta, MetaNode*& MN_list, bool*& trimmed, int h, int*& Hubs, int hubsize, int src, int dest, bool*& visited){
     int ref_hub = Hubs[h]; // Metanode ID for the hub
+
     stack<int> dfsStack;
     int s;
     int finalID_from; 
@@ -787,8 +748,6 @@ void merge_me(Graph* g_meta, MetaNode*& MN_list, bool*& trimmed, int h, int*& Hu
                 MN_list[s].h_idx = MN_list[finalID_to].h_idx;
                 if(finalID_to != finalID_from){
                     copy_hubInfo(MN_list[finalID_from].Hub_info , MN_list[finalID_to].Hub_info, hubsize);   
-                    // printf("Copied from %d -> %d \n",finalID_from,finalID_to);
-                    // printf("Condition U2\n");
                 }
                 
             } // end else bigger hub
@@ -838,7 +797,13 @@ bool apply_change(int*& from, int*& to, int hubsize, int direction){
     bool changed = false; // initialize return value as false, if any change is applied it will mark true, so the propagation continues
     // copy only the direction values
         for (int i = 0; i<hubsize; i++){
-            if((from[i] == direction) && (to[i] == 0)){
+            //todo
+            //if from[i] = 1 and to[i] = -1/5 (mark them as merged???)
+            if( ((from[i] == 1 || from[i] == 5) && (to[i] == 5 || to[i] == -1))) {
+                printf("MUST MERGE THE SCC\n");   
+            }
+
+            else if((from[i] == direction) && (to[i] == 0)){
                 to[i] = direction;
                 changed = true;
             } //end if
@@ -892,15 +857,7 @@ void propagate_all(Graph* g_meta, MetaNode*& MN_list,bool*& propagate_changed_up
 
 
 // ******************************************************************************
-//TODO Can make this better / removed if hub idx for all hub is marked during find_hub function check if the hub id is renamed. 
-int check_renamed( int*& hub_info , int hub_idx){
-    for (int i = 0; i<hub_idx; i++){
-        if (hub_info[i] == 5){
-            return i;
-        }
-    }
-    return hub_idx;
-}
+
 // ******************************************************************************
 
 int count_true(bool*& status, int size, int p){
@@ -930,10 +887,7 @@ int count_true(bool*& status, int size, int p){
 
 void update_property(Graph* g, Graph* g_meta,int*& Hubs, vector<int_int>* inserts,vector<int_int>* deletes, vector<int>* SCCx, unordered_map<int,int>* sccMAP,MetaNode*& MN_list, bool*& trimmed, bool*& propagate_changed_up, bool*& propagate_changed_down, bool*& insert_status,bool*& delete_status, int hubsize, int p)
 {
-    // int* status = new int[inserts->size()]{0};
     double st = omp_get_wtime();
-    bool* involved_in_merge = new bool[g_meta->node_count]{false}; //yet to be populated
-    int* num_common_hubs = new int[g_meta->node_count]{0}; //reduce 
     int* cases = new int [inserts->size()]{-1};
     int* common_hub = new int[inserts->size()]{-1};
     #pragma omp parallel for num_threads(p) schedule(guided)
@@ -942,22 +896,20 @@ void update_property(Graph* g, Graph* g_meta,int*& Hubs, vector<int_int>* insert
         if(!insert_status[i]){
             int src = inserts->at(i).first;
             int dest = inserts->at(i).second;
-            int_int action;
-            action = action_from_hub_values(MN_list,src,dest,Hubs,hubsize);
+            int_int action = action_from_hub_values(MN_list,src,dest,Hubs,hubsize);
             handle_action_initial(MN_list, Hubs, hubsize, i, action, insert_status, cases, common_hub);
         }
     }
     printf("\n Time determining the actions : %f \n", (float)(omp_get_wtime()-st));
 
-    // Collect the upstream and downstream for each hubs
-    // bool* active_hub = new bool[hubsize]{true};// active hub
+    // // Collect the upstream and downstream for each hubs
     for (int h = 0; h < hubsize; h++)
     {
         bool* visited = new bool[g_meta->node_count]{false};
             #pragma omp parallel for num_threads(p) schedule(guided)
             for (int ins = 0; ins<inserts->size(); ins++){
                 if (common_hub[ins] == h && cases[ins] == 1){
-                   merge_me(g_meta, MN_list,trimmed, h, Hubs, hubsize, inserts->at(ins).first, inserts->at(ins).second, visited,num_common_hubs);
+                   merge_me(g_meta, MN_list,trimmed, h, Hubs, hubsize, inserts->at(ins).first, inserts->at(ins).second, visited);
                     cases[ins] = 3; //not used currently
                 }// end common hub processing
             }//end parallel for loop
@@ -966,24 +918,66 @@ void update_property(Graph* g, Graph* g_meta,int*& Hubs, vector<int_int>* insert
      printf("\n Time for merging : %f \n", (float)(omp_get_wtime()-st));
        printf("\n");
 
-// UNCOMMENT
-    // int itr = 0;
-    // while (itr < 3)
-    // {
-    //     #pragma omp parallel for num_threads(p) schedule (guided)
-    //     for (int i = 0; i<inserts->size(); i++){
-    //         int src = inserts->at(i).first;
-    //         int dest = inserts->at(i).second;
-    //         propagate_all(g_meta,MN_list,propagate_changed_up, propagate_changed_down, trimmed, hubsize, p);
-    //         int_int action;
-    //         action = action_from_hub_values(MN_list,src,dest,Hubs,hubsize);
-    //         handle_action_initial(MN_list, Hubs, hubsize, i, action, insert_status, cases, common_hub);
-    //     }
-
-    // }
 }
 // ******************************************************************************
+void update_inserts(Graph* g, Graph* g_meta,int*& Hubs, vector<int_int>* inserts,vector<int_int>* deletes, vector<int>* SCCx, unordered_map<int,int>* sccMAP,MetaNode*& MN_list, bool*& trimmed, bool*& propagate_changed_up, bool*& propagate_changed_down, bool*& insert_status,bool*& delete_status, int hubsize, int p)
+{
+    // Step 1: Perform Initial Find action/ handle action and merge
+    double st = omp_get_wtime();
+    int* cases = new int [inserts->size()]{-1};
+    int* common_hub = new int[inserts->size()]{-1};
 
+    int itr = 0;
+    // printf("Iteration %d before while loop\n", itr);
+    while (itr<2){
+        if(itr!=0){
+                // printf("Iteration %d for propagating\n", itr);
+            // do not propagate in first 
+            propagate_all(g_meta, MN_list, propagate_changed_up, propagate_changed_down, trimmed, hubsize, p);
+        }
+        //find and handle action
+        printf("Iteration %d before all inserts \n", itr);
+        #pragma omp parallel for num_threads(p) schedule(guided)
+        for (int i=0; i<inserts->size(); i++){
+        //handle only if the insert status is false
+            if(!insert_status[i]){
+                int src = inserts->at(i).first;
+                int dest = inserts->at(i).second;
+                int_int action = action_from_hub_values(MN_list,src,dest,Hubs,hubsize);
+                handle_action(MN_list, Hubs, hubsize, i,src,dest, action, insert_status, cases, common_hub, propagate_changed_up, propagate_changed_down, itr);
+            }//end if not handled inserts
+        }//end for all inserts
+            // printf("Iteration %d before merge \n", itr);
+        // Merge the inserts created
+        for (int h = 0; h < hubsize; h++)
+        {
+            bool* visited = new bool[g_meta->node_count]{false};
+                #pragma omp parallel for num_threads(p) schedule(guided)
+                for (int ins = 0; ins<inserts->size(); ins++){
+                    if (common_hub[ins] == h && cases[ins] > 0){
+                    // if (common_hub[ins] == h && cases[ins] == 1){
+                    merge_me(g_meta, MN_list,trimmed, h, Hubs, hubsize, inserts->at(ins).first, inserts->at(ins).second, visited);
+                    cases[ins] = 3; //not used currently
+                    }// end common hub processing
+                }//end parallel for loop
+            delete[] visited;
+        }//end for all hubs during insertion
+
+        printf("Iteration %d: Count of  completed inserts after update propeerty: %d\n",itr, count_true(insert_status,inserts->size(),p));
+printf("Iteration %d: Count of  completed deletes after update property: %d\n",itr,count_true(delete_status,deletes->size(),p));
+        itr++;
+
+    }//end while iteration 
+    
+    // for (int ins = 0; ins<inserts->size(); ins++){
+    //     printf("Insert (%d -> %d) Status %d, Case %d, Common Hub %d\n", inserts->at(ins).first, inserts->at(ins).second,insert_status[ins], cases[ins],common_hub[ins]);
+    // }
+  
+    // Step 2: Perform Iteration k times
+
+    // Step 3: Perform BFS for the unhandled cases.
+
+}
 
 // ******************************************************************************
 void print_meta_network(Graph* g,MetaNode*& MN_List, int graph_size,int*& Hubs, int hubsize, bool*& trimmed)
@@ -1004,12 +998,6 @@ void print_meta_network(Graph* g,MetaNode*& MN_List, int graph_size,int*& Hubs, 
         }
         MN_List[i].is_hub? printf(" Hub %d\n",MN_List[i].h_idx):printf("Not Hub\n");
         printf("Current SCC ID: %d \n", MN_List[i].currentID);
-        // if(!trimmed[i]){
-        // printf("Changed SCC ID: %d \n", Hubs[MN_List[i].h_idx]);
-        // }
-        // else{
-        //      printf("Changed SCC ID: %d \n", i);
-        // }
 
         printf("Children: ");
         int_int c_range = g->get_children(i);
