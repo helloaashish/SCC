@@ -116,7 +116,7 @@ color("purple");
 printf("\n Time for Update: %f\n", (float)(omp_get_wtime()-st));
 color("reset");
 
-print_meta_network(&g_meta, MN_list, N, Hubs, hubsize, trimmed);
+//print_meta_network(&g_meta, MN_list, N, Hubs, hubsize, trimmed);
 printf("Count of  completed inserts: %d\n",count_true(insert_status,insert_size,p));
 // ******************* UPDATING PROPERTY COMPLETED ****************************
 
