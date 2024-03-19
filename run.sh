@@ -12,7 +12,7 @@ if [ $1 = "test" ]; then
 fi
 
 if [ $1 = "dag" ]; then
-   ./a.out /work/08434/apandey/ls6/SCC-new/SCC/Examples/dag.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/dagME.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/dagCC.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/dagMAP.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/dagCE.txt $2 $3
+   ./a.out /work/08434/apandey/ls6/SCC-new/SCC/Examples/dag.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/dagME.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/dagCC.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/dagMAP.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/dagCE.txt $2 $3 > out.txt
 fi
 
 if [ $1 = "baidu1" ]; then

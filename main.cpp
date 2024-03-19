@@ -8,12 +8,12 @@
 #include "DataStructure.hpp"
 #include "ReadData.hpp"
 #include "SupportingFunctions.hpp"
+#include "PrintFunctions.hpp"
 
 using namespace std;
 
 typedef pair<int,int> int_int;
-
-// ./a.out /home/users/apandey/Bhowmick_SCC/SCC-shared/DatasetsV2/baidu_1 /home/users/apandey/Bhowmick_SCC/SCC-shared/DatasetsV2/baidu_1_ME.txt /home/users/apandey/Bhowmick_SCC/SCC-shared/DatasetsV2/scc_baidu.txt /home/users/apandey/Bhowmick_SCC/SCC-shared/DatasetsV2/baidu_1_Map.txt /home/users/apandey/Datasets_SCC/ChangeEdges/baidu_ce/baidu_1M_25 2141301 1503003 4
+// #define DEBUG 
 
 int main(int argc, char *argv[]) {
     check_file_open(argv[1],argv[2],argv[3], argv[4], argv[5], argc);
@@ -75,12 +75,25 @@ for (int mn = 0; mn<N; mn++){
 
 
 // ******************* FINDING HUBS ****************************
+bool* propagate_changed_up = new bool[N]{false};
+bool* propagate_changed_down = new bool[N]{false};
+bool* p_up = new bool[N]{false};
+bool* p_down = new bool[N]{false};
 st = omp_get_wtime();
-find_hubs(&g, &g_meta,MN_list, &SCCx,trimmed,Hubs,n,N, hubsize,p);
+find_hubs(&g, &g_meta,MN_list, &SCCx,trimmed, propagate_changed_up, propagate_changed_down,Hubs, n,N, hubsize,p);
 color("purple");
 printf("\n Time for Finding Hubs: %f \n", (float)(omp_get_wtime()-st));
 color("reset");
 // // ******************* FINDING HUBS COMPLETED ****************************
+
+
+
+
+
+
+
+
+
 
 // ******************* ADDING INSERTS & DELETES ****************************
 st = omp_get_wtime();
@@ -91,38 +104,51 @@ delete_status = new bool[delete_size]{false};
 printf("Count of  completed inserts at first: %d\n",count_true(insert_status,insert_size,p));
 printf("Count of  completed deletes at first: %d\n",count_true(delete_status,delete_size,p));
 convert_changes(&g, &g_meta, &inserts, &deletes, &SCCx, &sccMAP, MN_list, trimmed, insert_status, delete_status, p);
+clean_inserts(&inserts, insert_status, trimmed, p);
+// clean_deletes(&deletes, delete_size, trimmed, p);
 color("purple");
 printf("\n Time for Insert/Delets Conversion: %f \n", (float)(omp_get_wtime()-st));
 color("reset");
 // ******************* ADDING INSERTS & DELETES COMPLETED ****************************
 
+// print_status(insert_status, &inserts);
 
-// ******************* Writing Levels ****************************
-bool* propagate_changed_up = new bool[N]{false};
-bool* propagate_changed_down = new bool[N]{false};
+// // ******************* Writing Levels ****************************
+
 printf("Count of  completed inserts after convert changes: %d\n",count_true(insert_status,insert_size,p));
 printf("Count of  completed deletes after convert changes: %d\n",count_true(delete_status,delete_size,p));
 st = omp_get_wtime();
-write_levels(&g_meta, MN_list,Hubs,trimmed,propagate_changed_up, propagate_changed_down,hubsize, p);
+//write level is taking short time because of the exact changes being handled
+//write_levels(&g_meta, MN_list,Hubs,trimmed,propagate_changed_up, propagate_changed_down,hubsize, p);
+//Graph* g_meta, MetaNode*& MN_list,bool*& propagate_changed_up, bool*& propagate_changed_down,bool*& p_up, bool*& p_down, bool*&trimmed, int hubsize,int p 
+propagate_all(&g_meta, MN_list, propagate_changed_up, propagate_changed_down, p_up, p_down, trimmed, hubsize, p );
+// propagate_inserts(&g_meta,&inserts, MN_list, propagate_changed_up, propagate_changed_down, p_up, p_down, trimmed, hubsize, p );
+
 color("purple");
 printf("\n Time for Writing Levels: %f \n", (float)(omp_get_wtime()-st));
 color("reset");
-// ******************* HUBS FINDING COMPLETED ****************************
+// // ******************* HUBS FINDING COMPLETED ****************************
 
-// print_meta_network(&g_meta,MN_list, n,Hubs,hubsize,trimmed);
 
-// ******************* UPDATING PROPERTY ****************************
-st = omp_get_wtime();
-//update_property(&g, &g_meta, Hubs, &inserts, &deletes, &SCCx, &sccMAP, MN_list, trimmed,propagate_changed_up, propagate_changed_down, insert_status, delete_status,hubsize, p);
-update_inserts(&g, &g_meta, Hubs, &inserts, &deletes, &SCCx, &sccMAP, MN_list, trimmed,propagate_changed_up, propagate_changed_down, insert_status, delete_status,hubsize, p);
-color("purple");
-printf("\n Time for Update: %f\n", (float)(omp_get_wtime()-st));
-color("reset");
 
-// print_meta_network(&g_meta, MN_list, N, Hubs, hubsize, trimmed);
-printf("Count of  completed inserts after update propeerty: %d\n",count_true(insert_status,insert_size,p));
-printf("Count of  completed deletes after update property: %d\n",count_true(delete_status,delete_size,p));
-// ******************* UPDATING PROPERTY COMPLETED ****************************
+
+
+// // ******************* UPDATING PROPERTY ****************************
+// st = omp_get_wtime();
+// //update_property(&g, &g_meta, Hubs, &inserts, &deletes, &SCCx, &sccMAP, MN_list, trimmed,propagate_changed_up, propagate_changed_down, insert_status, delete_status,hubsize, p);
+update_inserts(&g, &g_meta, Hubs, &inserts, &deletes, &SCCx, &sccMAP, MN_list, trimmed,propagate_changed_up, propagate_changed_down, p_up, p_down, insert_status, delete_status,hubsize, p);
+// //update_deletes(&g, &g_meta, Hubs, &inserts, &deletes, &SCCx, &sccMAP, MN_list, trimmed,propagate_changed_up, propagate_changed_down, insert_status, delete_status,hubsize, p);
+
+// color("purple");
+// printf("\n Time for Update: %f\n", (float)(omp_get_wtime()-st));
+// color("reset");
+#ifdef DEBUG
+    print_meta_network(&g_meta, MN_list, N, Hubs, hubsize, trimmed);
+#endif
+
+// printf("Count of  completed inserts after update propeerty: %d\n",count_true(insert_status,insert_size,p));
+// printf("Count of  completed deletes after update property: %d\n",count_true(delete_status,delete_size,p));
+// // ******************* UPDATING PROPERTY COMPLETED ****************************
 
 
 
