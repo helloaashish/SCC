@@ -1,32 +1,20 @@
 [1;35m
- Time for Reading: 0.001267 
+ Time for Reading: 0.000069 
+[0m[1;31m
+ Time for Creating shell: 1.561399 
 [0m[1;35m
- Time for Creating graph: 0.000002 
+ Time for Creating graph: 0.000012 
 [0m[1;35m
- Time for Finding Hubs: 0.000027 
+ Time for Finding Hubs: 0.000015 
 [0mCount of  completed inserts at first: 0
 Count of  completed deletes at first: 0
 [1;35m
- Time for Insert/Delets Conversion: 0.000022 
-[0mCount of  completed inserts after convert changes: 2
+ Time for Insert/Delets Conversion: 0.000003 
+[0mCount of  completed inserts after convert changes: 0
+Count of completed inserts 10
 Count of  completed deletes after convert changes: 0
 [1;35m
- Time for Writing Levels: 0.000012 
-[0mIteration: 1 
- (0->18) not created return code 3 
-Handle ACTION return 0 18
-(6,9) FOUND COMMOPN HUB SAME SIDE
-(16->17) Returned as NOT CREATED SCC (upstream ->HUB) with reference hub 17 
-(6,9) FOUND COMMOPN HUB SAME SIDE
-(9->3) Returned as CREATED SCC (downstream->hub) with reference hub 3 
- (6->9) not created return code -1 
-(8->9) Returned as CREATED SCC (hub->upstream) with reference hub 8 
-(3->5) Returned as CREATED SCC (hub->upstream) with reference hub 3 
-(3,6) FOUND COMMOPN HUB SAME SIDE
-(3,6) FOUND COMMOPN HUB SAME SIDE
-(3,6) FOUND COMMOPN HUB SAME SIDE
- (3->6) not created return code -1 
-(3 -> 0) 2 Copied to 1
-Iteration: 2 
-(0->18) Returned as NOT CREATED SCC (upstream ->HUB) with reference hub 7 
-(3->6) Returned as SAME SCC(6->9) Returned as SAME SCC
+ Time for Writing Levels: 0.000007 
+[0m[1;35m
+ Time for Update: 0.000010
+[0mCount of  completed inserts after convert changes: 0

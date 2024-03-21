@@ -15,7 +15,7 @@
 typedef pair<int,int> int_int;
 using namespace std;
 
-
+// #define DEBUG
 
 
 
@@ -283,29 +283,56 @@ void convert_changes(Graph* g, Graph* g_meta, vector<int_int>* inserts,vector<in
     int count_i=0;
     int count_d = 0;
 
-    #pragma omp parallel for num_threads(p) schedule(dynamic)
+    #pragma omp parallel for num_threads(p) schedule(guided)
     for (int i = 0; i<inserts->size(); i++)
     {
         //Obtain src and dest of insert
     int src = inserts->at(i).first;
     int dest = inserts->at(i).second;
 
-      //Convert to corresponding MetaNode or SCC
-    int m_src = sccMAP->at(SCCx->at(src));
-    int m_dest = sccMAP->at(SCCx->at(dest));
+    //   //Convert to corresponding MetaNode or SCC
+    //  int m_src = sccMAP->at(SCCx->at(src));
+    //  int m_dest = sccMAP->at(SCCx->at(dest));
 
+          //Convert to corresponding MetaNode or SCC
+    int m_src = SCCx->at(src);
+    int m_dest = SCCx->at(dest);
+
+        if (m_src == m_dest){
+        insert_status[i] = true;} //inserted within same SCC
+
+        else{
+       if(trimmed[m_src]){
+    //        // if(g_meta->num_childrens(m_src) == 0)
+    //         {
+             trimmed[m_src] = false;
+    //         }
+         }
+
+     if(trimmed[m_dest]){
+    //        // if(g_meta->num_parents(m_dest) == 0) 
+    //         {
+             trimmed[m_dest] = false;
+    //         }
+         }
+        }
     // RENAME THEM
-    inserts->at(i).first = m_src;
-    inserts->at(i).second = m_dest;
+    //inserts->at(i).first = m_src;
+    //inserts->at(i).second = m_dest;
+
+
+    // if(trimmed[m_dest] && (g_meta->num_parents(m_dest) == 0)){
+    //         trimmed[m_dest] = false;
+    //     }
 
     //Mark MetaNode trim=false if particiapting in insert
-    if(trimmed[m_src] && (g_meta->num_childrens(m_src) == 0)){
-            trimmed[m_src] = false;
-        }
+    // if(trimmed[m_src] && (g_meta->num_childrens(m_src) == 0)){
+    //         trimmed[m_src] = false;
+    //     }
 
-    if(trimmed[m_dest] && (g_meta->num_parents(m_dest) == 0)){
-            trimmed[m_dest] = false;
-        }
+    // if(trimmed[m_dest] && (g_meta->num_parents(m_dest) == 0)){
+    //         trimmed[m_dest] = false;
+    //     }
 
     // if (m_src == m_dest){
     //     insert_status[i] = true;} //inserted within same SCC
@@ -487,7 +514,7 @@ int_int action_from_hub(MetaNode*& MN_list,int from,int to, int*& Hubs,int hubsi
             if (dest==Hubs[i]){
                 #ifdef DEBUG
                 printf("(%d->%d) Returned as CREATED SCC (downstream->hub) with reference hub %d \n",from, to,Hubs[id]);
-                #elif
+                #endif
 
                 return {5,i};//SCC can be created down -> hub
             }
@@ -1290,6 +1317,8 @@ void update_inserts(Graph* g, Graph* g_meta,int*& Hubs, vector<int_int>* inserts
         itr++;
         #ifdef DEBUG
          printf("Iteration: %d \n", itr);
+        print_status(insert_status, inserts);
+        print_meta_network(g_meta, MN_list, g_meta->node_count, Hubs, hubsize, trimmed);
          #endif
         //step 1 propagate
         propagate_all(g_meta, MN_list, propagate_changed_up, propagate_changed_down, p_up, p_down, trimmed, hubsize, p );

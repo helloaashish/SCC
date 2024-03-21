@@ -13,9 +13,10 @@
 using namespace std;
 
 typedef pair<int,int> int_int;
+
 // #define DEBUG 
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]){
     check_file_open(argv[1],argv[2],argv[3], argv[4], argv[5], argc);
     int n,N,m,M; //number of nodes and metanodes
     int hubsize = atoi(argv[6]);
@@ -50,7 +51,11 @@ int main(int argc, char *argv[]) {
     color("reset");
 // ******************* READING COMPLETED ****************************
 
-  
+  double s = omp_get_wtime();
+  int ret = system("awk 'NR==FNR { lines[NR-1] = $0; next } { if (FNR <= length(lines)) { $1 = lines[$1]; $2 = lines[$2] } }' /home/users/apandey/SCC-new/Examples/xbaidu /home/users/apandey/SCC-new/Examples/baidu_1M_25T");
+      color("red");
+    printf("\n Time for Creating shell: %f \n", (float)(omp_get_wtime()-s));
+    color("reset");
 
 
 // // ******************* CREATING GRAPHS ****************************
@@ -92,19 +97,17 @@ color("reset");
 
 
 
-
-
-
 // ******************* ADDING INSERTS & DELETES ****************************
-st = omp_get_wtime();
+
 int insert_size = int(inserts.size());
 int delete_size = int(deletes.size());
 insert_status = new bool[insert_size]{false}; //true if completed false if needs to be processed
 delete_status = new bool[delete_size]{false};
 printf("Count of  completed inserts at first: %d\n",count_true(insert_status,insert_size,p));
 printf("Count of  completed deletes at first: %d\n",count_true(delete_status,delete_size,p));
-convert_changes(&g, &g_meta, &inserts, &deletes, &SCCx, &sccMAP, MN_list, trimmed, insert_status, delete_status, p);
-clean_inserts(&inserts, insert_status, trimmed, p);
+st = omp_get_wtime();
+// convert_changes(&g, &g_meta, &inserts, &deletes, &SCCx, &sccMAP, MN_list, trimmed, insert_status, delete_status, p);
+//clean_inserts(&inserts, insert_status, trimmed, p);
 // clean_deletes(&deletes, delete_size, trimmed, p);
 color("purple");
 printf("\n Time for Insert/Delets Conversion: %f \n", (float)(omp_get_wtime()-st));
@@ -116,10 +119,12 @@ color("reset");
 // // ******************* Writing Levels ****************************
 
 printf("Count of  completed inserts after convert changes: %d\n",count_true(insert_status,insert_size,p));
+printf("Count of completed inserts %d\n",int(inserts.size()));
 printf("Count of  completed deletes after convert changes: %d\n",count_true(delete_status,delete_size,p));
 st = omp_get_wtime();
 //write level is taking short time because of the exact changes being handled
 //write_levels(&g_meta, MN_list,Hubs,trimmed,propagate_changed_up, propagate_changed_down,hubsize, p);
+
 //Graph* g_meta, MetaNode*& MN_list,bool*& propagate_changed_up, bool*& propagate_changed_down,bool*& p_up, bool*& p_down, bool*&trimmed, int hubsize,int p 
 propagate_all(&g_meta, MN_list, propagate_changed_up, propagate_changed_down, p_up, p_down, trimmed, hubsize, p );
 // propagate_inserts(&g_meta,&inserts, MN_list, propagate_changed_up, propagate_changed_down, p_up, p_down, trimmed, hubsize, p );
@@ -136,14 +141,15 @@ color("reset");
 // // ******************* UPDATING PROPERTY ****************************
 // st = omp_get_wtime();
 // //update_property(&g, &g_meta, Hubs, &inserts, &deletes, &SCCx, &sccMAP, MN_list, trimmed,propagate_changed_up, propagate_changed_down, insert_status, delete_status,hubsize, p);
-update_inserts(&g, &g_meta, Hubs, &inserts, &deletes, &SCCx, &sccMAP, MN_list, trimmed,propagate_changed_up, propagate_changed_down, p_up, p_down, insert_status, delete_status,hubsize, p);
+//update_inserts(&g, &g_meta, Hubs, &inserts, &deletes, &SCCx, &sccMAP, MN_list, trimmed,propagate_changed_up, propagate_changed_down, p_up, p_down, insert_status, delete_status,hubsize, p);
 // //update_deletes(&g, &g_meta, Hubs, &inserts, &deletes, &SCCx, &sccMAP, MN_list, trimmed,propagate_changed_up, propagate_changed_down, insert_status, delete_status,hubsize, p);
 
-// color("purple");
-// printf("\n Time for Update: %f\n", (float)(omp_get_wtime()-st));
-// color("reset");
+color("purple");
+printf("\n Time for Update: %f\n", (float)(omp_get_wtime()-st));
+color("reset");
+printf("Count of  completed inserts after convert changes: %d\n",count_true(insert_status,insert_size,p));
 #ifdef DEBUG
-    print_meta_network(&g_meta, MN_list, N, Hubs, hubsize, trimmed);
+  print_meta_network(&g_meta, MN_list, N, Hubs, hubsize, trimmed);
 #endif
 
 // printf("Count of  completed inserts after update propeerty: %d\n",count_true(insert_status,insert_size,p));
