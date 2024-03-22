@@ -1,20 +1,272 @@
 [1;35m
- Time for Reading: 0.000069 
-[0m[1;31m
- Time for Creating shell: 1.561399 
+ Time for Reading: 0.000067 
 [0m[1;35m
- Time for Creating graph: 0.000012 
+ Time for Creating graph: 0.000005 
 [0m[1;35m
- Time for Finding Hubs: 0.000015 
-[0mCount of  completed inserts at first: 0
-Count of  completed deletes at first: 0
-[1;35m
- Time for Insert/Delets Conversion: 0.000003 
-[0mCount of  completed inserts after convert changes: 0
-Count of completed inserts 10
-Count of  completed deletes after convert changes: 0
-[1;35m
- Time for Writing Levels: 0.000007 
-[0m[1;35m
- Time for Update: 0.000010
-[0mCount of  completed inserts after convert changes: 0
+ Time for Finding Hubs: 0.000010 
+[0m
+Node: 0  TRIMMED!!!
+Not Hub
+Current SCC ID: 0 
+Children: 1, 
+ Parents: 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 1   NOT TRIMMED!!!
+ Hub 2
+Current SCC ID: 1 
+Children: 2, 3, 
+ Parents: 0, 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->5) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 2  TRIMMED!!!
+Not Hub
+Current SCC ID: 2 
+Children: 
+ Parents: 1, 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 3   NOT TRIMMED!!!
+ Hub 4
+Current SCC ID: 3 
+Children: 9, 
+ Parents: 1, 5, 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->5) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 4  TRIMMED!!!
+Not Hub
+Current SCC ID: 4 
+Children: 5, 17, 
+ Parents: 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 5   NOT TRIMMED!!!
+ Hub 5
+Current SCC ID: 5 
+Children: 3, 6, 
+ Parents: 4, 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->5) 
+ (7->0) 
+ (8->0) 
+
+Node: 6   NOT TRIMMED!!!
+Not Hub
+Current SCC ID: 6 
+Children: 7, 
+ Parents: 5, 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 7   NOT TRIMMED!!!
+ Hub 6
+Current SCC ID: 7 
+Children: 8, 
+ Parents: 6, 17, 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->5) 
+ (8->0) 
+
+Node: 8   NOT TRIMMED!!!
+ Hub 7
+Current SCC ID: 8 
+Children: 10, 
+ Parents: 7, 9, 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->5) 
+
+Node: 9   NOT TRIMMED!!!
+Not Hub
+Current SCC ID: 9 
+Children: 8, 
+ Parents: 3, 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 10   NOT TRIMMED!!!
+ Hub 1
+Current SCC ID: 10 
+Children: 11, 12, 
+ Parents: 8, 
+ Hub Info :  (17->0) 
+ (10->5) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 11   NOT TRIMMED!!!
+Not Hub
+Current SCC ID: 11 
+Children: 13, 
+ Parents: 10, 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 12   NOT TRIMMED!!!
+Not Hub
+Current SCC ID: 12 
+Children: 13, 
+ Parents: 10, 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 13   NOT TRIMMED!!!
+ Hub 3
+Current SCC ID: 13 
+Children: 14, 
+ Parents: 11, 12, 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->5) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 14  TRIMMED!!!
+Not Hub
+Current SCC ID: 14 
+Children: 
+ Parents: 13, 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 15  TRIMMED!!!
+Not Hub
+Current SCC ID: 15 
+Children: 16, 
+ Parents: 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 16   NOT TRIMMED!!!
+Not Hub
+Current SCC ID: 16 
+Children: 17, 
+ Parents: 15, 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 17   NOT TRIMMED!!!
+ Hub 0
+Current SCC ID: 17 
+Children: 18, 7, 
+ Parents: 16, 4, 
+ Hub Info :  (17->5) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 
+
+Node: 18  TRIMMED!!!
+Not Hub
+Current SCC ID: 18 
+Children: 
+ Parents: 17, 
+ Hub Info :  (17->0) 
+ (10->0) 
+ (1->0) 
+ (13->0) 
+ (3->0) 
+ (5->0) 
+ (7->0) 
+ (8->0) 

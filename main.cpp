@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
     double start_timer;
 
     int *e_src, *e_dest, *e_wt, *m_src, *m_dest, *m_wt;
-    bool *trimmed;
+    // bool *trimmed;
     bool* insert_status;
     bool* delete_status;
 
@@ -51,11 +51,11 @@ int main(int argc, char *argv[]){
     color("reset");
 // ******************* READING COMPLETED ****************************
 
-  double s = omp_get_wtime();
-  int ret = system("awk 'NR==FNR { lines[NR-1] = $0; next } { if (FNR <= length(lines)) { $1 = lines[$1]; $2 = lines[$2] } }' /home/users/apandey/SCC-new/Examples/xbaidu /home/users/apandey/SCC-new/Examples/baidu_1M_25T");
-      color("red");
-    printf("\n Time for Creating shell: %f \n", (float)(omp_get_wtime()-s));
-    color("reset");
+//   double s = omp_get_wtime();
+//   int ret = system("awk 'NR==FNR { lines[NR-1] = $0; next } { if (FNR <= length(lines)) { $1 = lines[$1]; $2 = lines[$2] } }' /home/users/apandey/SCC-new/Examples/xbaidu /home/users/apandey/SCC-new/Examples/baidu_1M_25T");
+//       color("red");
+//     printf("\n Time for Creating shell: %f \n", (float)(omp_get_wtime()-s));
+//     color("reset");
 
 
 // // ******************* CREATING GRAPHS ****************************
@@ -68,6 +68,7 @@ int main(int argc, char *argv[]){
     color("reset");
 // // ******************* CREATING GRPAHS COMPLETED **************************** 
 
+
 //Creating MetaNode Array for Hub Infornmation
 MetaNode* MN_list = new MetaNode[N];
 #pragma omp parallel for num_threads(p) schedule(dynamic)
@@ -76,6 +77,7 @@ for (int mn = 0; mn<N; mn++){
     MN_list[mn].currentID = mn; //current value of SCC
     MN_list[mn].is_hub = false; //boolean to denote if Metanode is a hub
     MN_list[mn].h_idx = -1; // initialize -1 for h_idx
+    MN_list[mn].trimmed = true;
 }
 
 
@@ -85,12 +87,13 @@ bool* propagate_changed_down = new bool[N]{false};
 bool* p_up = new bool[N]{false};
 bool* p_down = new bool[N]{false};
 st = omp_get_wtime();
-find_hubs(&g, &g_meta,MN_list, &SCCx,trimmed, propagate_changed_up, propagate_changed_down,Hubs, n,N, hubsize,p);
+find_hubs(&g, &g_meta,MN_list, &SCCx, propagate_changed_up, propagate_changed_down,Hubs, n,N, hubsize,p);
 color("purple");
 printf("\n Time for Finding Hubs: %f \n", (float)(omp_get_wtime()-st));
 color("reset");
+// print_meta_network(&g_meta, MN_list, N, Hubs, hubsize);
 // // ******************* FINDING HUBS COMPLETED ****************************
-
+/*
 
 
 
@@ -156,8 +159,7 @@ printf("Count of  completed inserts after convert changes: %d\n",count_true(inse
 // printf("Count of  completed deletes after update property: %d\n",count_true(delete_status,delete_size,p));
 // // ******************* UPDATING PROPERTY COMPLETED ****************************
 
-
-
+*/
     return 0;
 }
 

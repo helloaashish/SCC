@@ -2,55 +2,60 @@
 module load g++
 make all
 
+artemis_path="/home/users/apandey/SCC-new"
+tacc_path="/work/08434/apandey/ls6"
 
 if [ $1 = "baidu" ]; then
-    ./a.out /work/08434/apandey/ls6/SCC-new/SCC/Examples/baiduKeyEdged.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/baidu_ME.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/scc_baidu.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/baidu_1_Map.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/baidu_1M_25 $2 $3
+    ./a.out ${tacc_path}/SCC-new/SCC/Examples/baiduKeyEdged.txt ${tacc_path}/SCC-new/SCC/Examples/baidu_ME.txt ${tacc_path}/SCC-new/SCC/Examples/scc_baidu.txt ${tacc_path}/SCC-new/SCC/Examples/baidu_1_Map.txt ${tacc_path}/SCC-new/SCC/Examples/baidu_1M_25 $2 $3
 fi
 
 if [ $1 = "test" ]; then
-   ./a.out /work/08434/apandey/ls6/SCC-new/SCC/Examples/t.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/test_ME.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/test_CC1.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/test_map.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/test_change1.txt $2 $3
+   ./a.out ${tacc_path}/SCC-new/SCC/Examples/t.txt ${tacc_path}/SCC-new/SCC/Examples/test_ME.txt ${tacc_path}/SCC-new/SCC/Examples/test_CC1.txt ${tacc_path}/SCC-new/SCC/Examples/test_map.txt ${tacc_path}/SCC-new/SCC/Examples/test_change1.txt $2 $3
 fi
 
 if [ $1 = "dag" ]; then
-   ./a.out /work/08434/apandey/ls6/SCC-new/SCC/Examples/dag.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/dagME.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/dagCC.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/dagMAP.txt /work/08434/apandey/ls6/SCC-new/SCC/Examples/dagCE.txt $2 $3 > out.txt
+   ./a.out ${tacc_path}/SCC-new/SCC/Examples/dag.txt ${tacc_path}/SCC-new/SCC/Examples/dagME.txt ${tacc_path}/SCC-new/SCC/Examples/dagCC.txt ${tacc_path}/SCC-new/SCC/Examples/dagMAP.txt ${tacc_path}/SCC-new/SCC/Examples/dagCE.txt $2 $3 > out.txt
 fi
 
 if [ $1 = "baidu1" ]; then
-    ./a.out /work/08434/apandey/ls6/SCC-new/Datasets/KeyEdged/baidu /work/08434/apandey/ls6/SCC-new/Datasets/Metagraphs/baidu /work/08434/apandey/ls6/SCC-new/Datasets/SCCx/baidu /work/08434/apandey/ls6/SCC-new/Datasets/Map/baidu /work/08434/apandey/ls6/SCC-new/Datasets/ChangedEdges/baidu_ce/baidu_1M_25 $2 $3
+    ./a.out ${tacc_path}/SCC-new/Datasets/KeyEdged/baidu ${tacc_path}/SCC-new/Datasets/Metagraphs/baidu ${tacc_path}/SCC-new/Datasets/SCCx/baidu ${tacc_path}/SCC-new/Datasets/Map/baidu ${tacc_path}/SCC-new/Datasets/ChangedEdges/baidu_ce/baidu_1M_25 $2 $3
 fi
 
 if [ $1 = "flickr" ]; then
-    ./a.out /work/08434/apandey/ls6/SCC-new/Datasets/KeyEdged/flickr /work/08434/apandey/ls6/SCC-new/Datasets/Metagraphs/flickr /work/08434/apandey/ls6/SCC-new/Datasets/SCCx/flickr /work/08434/apandey/ls6/SCC-new/Datasets/Map/flickr /work/08434/apandey/ls6/SCC-new/Datasets/ChangedEdges/flickr_ce/flickr_1M_25 $2 $3
+    ./a.out ${tacc_path}/SCC-new/Datasets/KeyEdged/flickr ${tacc_path}/SCC-new/Datasets/Metagraphs/flickr ${tacc_path}/SCC-new/Datasets/SCCx/flickr ${tacc_path}/SCC-new/Datasets/Map/flickr ${tacc_path}/SCC-new/Datasets/ChangedEdges/flickr_ce/flickr_1M_25 $2 $3
 fi
 
 if [ $1 = "livejournal" ]; then
-    ./a.out /work/08434/apandey/ls6/SCC-new/Datasets/KeyEdged/livejournal /work/08434/apandey/ls6/SCC-new/Datasets/Metagraphs/livejournal /work/08434/apandey/ls6/SCC-new/Datasets/SCCx/livejournal /work/08434/apandey/ls6/SCC-new/Datasets/Map/livejournal /work/08434/apandey/ls6/SCC-new/Datasets/ChangedEdges/livejournal_ce/livejournal_1M_25 $2 $3
+    ./a.out ${tacc_path}/SCC-new/Datasets/KeyEdged/livejournal ${tacc_path}/SCC-new/Datasets/Metagraphs/livejournal ${tacc_path}/SCC-new/Datasets/SCCx/livejournal ${tacc_path}/SCC-new/Datasets/Map/livejournal ${tacc_path}/SCC-new/Datasets/ChangedEdges/livejournal_ce/livejournal_1M_25 $2 $3
 fi
 
 if [ $1 = "pokec" ]; then
-    ./a.out /work/08434/apandey/ls6/SCC-new/Datasets/KeyEdged/pokec /work/08434/apandey/ls6/SCC-new/Datasets/Metagraphs/pokec /work/08434/apandey/ls6/SCC-new/Datasets/SCCx/pokec /work/08434/apandey/ls6/SCC-new/Datasets/Map/pokec /work/08434/apandey/ls6/SCC-new/Datasets/ChangedEdges/pokec_ce/pokec_1M_25 $2 $3
+    ./a.out ${tacc_path}/SCC-new/Datasets/KeyEdged/pokec ${tacc_path}/SCC-new/Datasets/Metagraphs/pokec ${tacc_path}/SCC-new/Datasets/SCCx/pokec ${tacc_path}/SCC-new/Datasets/Map/pokec ${tacc_path}/SCC-new/Datasets/ChangedEdges/pokec_ce/pokec_1M_25 $2 $3
 fi
 
 if [ $1 = "wiki-com" ]; then
-    ./a.out /work/08434/apandey/ls6/SCC-new/Datasets/KeyEdged/wiki-com /work/08434/apandey/ls6/SCC-new/Datasets/Metagraphs/wiki-com /work/08434/apandey/ls6/SCC-new/Datasets/SCCx/wiki-com /work/08434/apandey/ls6/SCC-new/Datasets/Map/wiki-com /work/08434/apandey/ls6/SCC-new/Datasets/ChangedEdges/wiki-com_ce/wiki-com_1M_25 $2 $3
+    ./a.out ${tacc_path}/SCC-new/Datasets/KeyEdged/wiki-com ${tacc_path}/SCC-new/Datasets/Metagraphs/wiki-com ${tacc_path}/SCC-new/Datasets/SCCx/wiki-com ${tacc_path}/SCC-new/Datasets/Map/wiki-com ${tacc_path}/SCC-new/Datasets/ChangedEdges/wiki-com_ce/wiki-com_1M_25 $2 $3
 fi
 
 if [ $1 = "wiki-en" ]; then
-    ./a.out /work/08434/apandey/ls6/SCC-new/Datasets/KeyEdged/wiki-en /work/08434/apandey/ls6/SCC-new/Datasets/Metagraphs/wiki-en /work/08434/apandey/ls6/SCC-new/Datasets/SCCx/wiki-en /work/08434/apandey/ls6/SCC-new/Datasets/Map/wiki-en /work/08434/apandey/ls6/SCC-new/Datasets/ChangedEdges/wiki-en_ce/wiki-en_1M_25 $2 $3
+    ./a.out ${tacc_path}/SCC-new/Datasets/KeyEdged/wiki-en ${tacc_path}/SCC-new/Datasets/Metagraphs/wiki-en ${tacc_path}/SCC-new/Datasets/SCCx/wiki-en ${tacc_path}/SCC-new/Datasets/Map/wiki-en ${tacc_path}/SCC-new/Datasets/ChangedEdges/wiki-en_ce/wiki-en_1M_25 $2 $3
 fi
 
 
 if [ $1 = "artemis_baidu" ]; then
-    ./a.out /home/users/apandey/SCC-new/Examples/baiduKeyEdged.txt /home/users/apandey/SCC-new/Examples/baidu_ME.txt /home/users/apandey/SCC-new/Examples/xbaidu /home/users/apandey/SCC-new/Examples/baidu_1_Map.txt /home/users/apandey/SCC-new/Examples/baidu_1M_25c $2 $3
+    ./a.out ${artemis_path}/Examples/baiduKeyEdged.txt ${artemis_path}/Examples/baidu_ME.txt ${artemis_path}/Examples/xbaidu ${artemis_path}/Examples/baidu_1_Map.txt ${artemis_path}/Examples/baidu_1M_25c $2 $3
 fi
 
 if [ $1 = "artemis_test" ]; then
-   ./a.out /home/users/apandey/SCC-new/Examples/t.txt /home/users/apandey/SCC-new/Examples/test_ME.txt /home/users/apandey/SCC-new/Examples/test_CC1.txt /home/users/apandey/SCC-new/Examples/test_map.txt /home/users/apandey/SCC-new/Examples/test_change1.txt $2 $3
+   ./a.out ${artemis_path}/Examples/t.txt ${artemis_path}/Examples/test_ME.txt ${artemis_path}/Examples/test_CC1.txt ${artemis_path}/Examples/test_map.txt ${artemis_path}/Examples/test_change1.txt $2 $3
 fi
 
 if [ $1 = "artemis_dag" ]; then
-   ./a.out /home/users/apandey/SCC-new/Examples/dag.txt /home/users/apandey/SCC-new/Examples/dagME.txt /home/users/apandey/SCC-new/Examples/dagCC.txt /home/users/apandey/SCC-new/Examples/dagMAP.txt /home/users/apandey/SCC-new/Examples/dagCE.txt $2 $3 > out.txt
+   ./a.out ${artemis_path}/Examples/dag.txt ${artemis_path}/Examples/dagME.txt ${artemis_path}/Examples/dagCC.txt ${artemis_path}/Examples/dagMAP.txt ${artemis_path}/Examples/dagCE.txt $2 $3 > out.txt
 fi
 
+if [ $1 = "artemis_test" ]; then
+   ./a.out ${artemis_path}/Examples/test_file1.txt ${artemis_path}/Examples/test_ME.txt ${artemis_path}/Examples/test_CC1.txt ${artemis_path}/Examples/test_map.txt ${artemis_path}/Examples/test_change1.txt $2 $3
+fi
 
 # baidu

@@ -63,18 +63,18 @@ void print_Hub_info(MetaNode*& MN_List,int node, int hubsize)
 
 
 // ******************************************************************************
-void print_meta_network(Graph* g,MetaNode*& MN_List, int graph_size,int*& Hubs, int hubsize, bool*& trimmed)
+void print_meta_network(Graph* g,MetaNode*& MN_List, int graph_size,int*& Hubs, int hubsize)
 {
     for (int i = 0; i<graph_size; i++)
     {
         //color("yellow");
         printf("\nNode: %d ",i);
-               if(trimmed[i]){
+               if(MN_List[i].trimmed){
             //color("red");
             printf(" TRIMMED!!!\n");
             //color("reset");
         }
-        if(!trimmed[i]){
+        if(!MN_List[i].trimmed){
             //color("green");
             printf("  NOT TRIMMED!!!\n");
             //color("reset");

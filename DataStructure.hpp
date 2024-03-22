@@ -19,6 +19,10 @@ struct Graph{
     int* b_col_idx; // backward row pointer for backward edges
     int* edge_wt; //edge weight will be 1 for active edges; 0 for deleted edges ; -1 for key edges
                   // in case of metagraph, the edge_wt shows the number of links between each metagraph.
+
+    int* out_deg; //out degree of the node
+    int* in_deg; //in degree of the node 
+
     int node_count;
     int edge_count;
 
@@ -48,6 +52,7 @@ struct Graph{
             int_int range_childern = get_children(node);
             int_int range_parents = get_parents(node);
             printf("***** NODE: %d *****\n", node);
+            printf("Degrees: %d(IN) %d(OUT)\n",in_deg[node],out_deg[node]);
             for (int i = range_childern.first; i<range_childern.second; i++){
                 printf(" ---> %d (%d) \n",f_col_idx[i],edge_wt[i]);
             }
@@ -111,8 +116,7 @@ struct X_Graph{
 
 
 struct MetaNode{
-    bool inserted_from;
-    bool inserted_to;
+    bool trimmed;
     int currentID;
     bool is_hub;
     int h_idx;

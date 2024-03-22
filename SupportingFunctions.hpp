@@ -74,8 +74,13 @@ void create_graph(int* src, int* dest, int* wt_list, int n, int m, Graph* graph)
     graph->node_count = n;
     graph->edge_count = m;
 
+    graph->in_deg = new int[n]{0};
+    graph->out_deg = new int[n]{0};
+
     // parallel in here did not work???
     for (int i = 0; i<m; i++){
+        graph->in_deg[dest[i]]++;
+        graph->out_deg[src[i]]++;
         graph->f_row_ptr[src[i]+1]++;
         graph->b_row_ptr[dest[i]+1]++;
     }
@@ -110,11 +115,11 @@ void create_graph(int* src, int* dest, int* wt_list, int n, int m, Graph* graph)
 // ******************************************************************************
 
 // ******************************************************************************
-void find_hubs(Graph* g, Graph* mg, MetaNode*& MN_list,vector<int>* SCCx, bool*& trimmed, bool*& propagate_changed_up, bool*& propagate_changed_down, int*& Hubs, int n, int N, int hubsize, int p){
+void find_hubs(Graph* g, Graph* mg, MetaNode*& MN_list,vector<int>* SCCx, bool*& propagate_changed_up, bool*& propagate_changed_down, int*& Hubs, int n, int N, int hubsize, int p){
     int count=0;
     vector<int_int> hub_candidates(N); //TODO change to array
     int non_zero = 0;
-    bool* trim = new bool[N]; //boolean to indicate if node is source or sink 
+    // bool* trim = new bool[N]; //boolean to indicate if node is source or sink 
     int* temp_hub = new int[hubsize]{0}; 
 
 
@@ -124,18 +129,23 @@ void find_hubs(Graph* g, Graph* mg, MetaNode*& MN_list,vector<int>* SCCx, bool*&
     {
         int pr=0; //product of in and out degree
         int v = 0; //count for vertices that are not src or sink
-        if ((mg->num_parents(id) >0) && (mg->num_childrens(id)>0)) //TODO can we get value during read and then store in array
+        int deg_out = mg->out_deg[id];
+        int deg_in = mg->in_deg[id];
+        // if ((mg->num_parents(id) >0) && (mg->num_childrens(id)>0)) //TODO can we get value during read and then store in array
+        if ((deg_in >0) && (deg_out>0)) //TODO can we get value during read and then store in array
         {
-            pr = mg->num_parents(id) * mg->num_childrens(id);
-            trim[id] = false;
+            // pr = mg->num_parents(id) * mg->num_childrens(id);
+            pr = deg_out * deg_in;
+            MN_list[id].trimmed = false;
+            // trim[id] = false;
     #pragma omp atomic capture
             v=non_zero++; 
             hub_candidates.at(v).first = pr;
             hub_candidates.at(v).second = id;
         }
-        else{
-            trim[id] = true;
-        }
+        // else{
+        //     trim[id] = true;
+        // }
     }//end of for
     
 
@@ -155,7 +165,7 @@ void find_hubs(Graph* g, Graph* mg, MetaNode*& MN_list,vector<int>* SCCx, bool*&
         propagate_changed_down[hub_candidates.at(h).second] = true;
     }
 
-    trimmed = trim;
+    // trimmed = trim;
     Hubs = temp_hub;
     hub_candidates.clear();
 
