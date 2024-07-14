@@ -63,7 +63,7 @@ void print_Hub_info(MetaNode*& MN_List,int node, int hubsize)
 
 
 // ******************************************************************************
-void print_meta_network(Graph* g,MetaNode*& MN_List, int graph_size,int*& Hubs, int hubsize)
+/*void print_meta_network(Graph* g,MetaNode*& MN_List, int graph_size,int*& Hubs, int hubsize)
 {
     for (int i = 0; i<graph_size; i++)
     {
@@ -103,6 +103,6 @@ void print_meta_network(Graph* g,MetaNode*& MN_List, int graph_size,int*& Hubs, 
 
     }
 }
-
+*/
 // ******************************************************************************
 #endif
