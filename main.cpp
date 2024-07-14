@@ -91,13 +91,13 @@ find_hubs(&g, &g_meta,MN_list, &SCCx, propagate_changed_up, propagate_changed_do
 color("purple");
 printf("\n Time for Finding Hubs: %f \n", (float)(omp_get_wtime()-st));
 color("reset");
-// print_meta_network(&g_meta, MN_list, N, Hubs, hubsize);
+print_meta_network(&g_meta, MN_list, N, Hubs, hubsize);
 // // ******************* FINDING HUBS COMPLETED ****************************
+
+
+
+
 /*
-
-
-
-
 
 
 // ******************* ADDING INSERTS & DELETES ****************************
@@ -110,7 +110,7 @@ printf("Count of  completed inserts at first: %d\n",count_true(insert_status,ins
 printf("Count of  completed deletes at first: %d\n",count_true(delete_status,delete_size,p));
 st = omp_get_wtime();
 // convert_changes(&g, &g_meta, &inserts, &deletes, &SCCx, &sccMAP, MN_list, trimmed, insert_status, delete_status, p);
-//clean_inserts(&inserts, insert_status, trimmed, p);
+// clean_inserts(&inserts, insert_status, trimmed, p);
 // clean_deletes(&deletes, delete_size, trimmed, p);
 color("purple");
 printf("\n Time for Insert/Delets Conversion: %f \n", (float)(omp_get_wtime()-st));
@@ -126,7 +126,7 @@ printf("Count of completed inserts %d\n",int(inserts.size()));
 printf("Count of  completed deletes after convert changes: %d\n",count_true(delete_status,delete_size,p));
 st = omp_get_wtime();
 //write level is taking short time because of the exact changes being handled
-//write_levels(&g_meta, MN_list,Hubs,trimmed,propagate_changed_up, propagate_changed_down,hubsize, p);
+write_levels(&g_meta, MN_list,Hubs,trimmed,propagate_changed_up, propagate_changed_down,hubsize, p);
 
 //Graph* g_meta, MetaNode*& MN_list,bool*& propagate_changed_up, bool*& propagate_changed_down,bool*& p_up, bool*& p_down, bool*&trimmed, int hubsize,int p 
 propagate_all(&g_meta, MN_list, propagate_changed_up, propagate_changed_down, p_up, p_down, trimmed, hubsize, p );
