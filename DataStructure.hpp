@@ -74,13 +74,34 @@ bool sort_first_second(const pair<int, int>& a,
 
 
 struct MetaNode{
+    
+//Connectivity Information
+//In Original Edges	
+int in=-1; //in_degree 	
+int out=-1; //out_degree 	
+int fstart=-1;// first index of column
+int fend=-1;// last index of column
+int fn1=-1;// first neighbor
+int bstart=-1;// first index of column
+int bend=-1;// last index of column
+int bn1=-1;// first neighbor
+
+//In Inserted edges
+int inI=-1; //in_degree	
+int outI=-1; //out_degree	
+int fstartI=-1;// first index of column
+int fendI=-1;// last index of column
+int fn1I=-1;// first neighbor
+int bstartI=-1;// first index of bwd column
+int bendI=-1;// last index of bwd column
+int bn1I=-1;// first bwd neighbor
+
+//SCC Information	
     bool trimmed=false;
     int currentID=-1;
     bool is_hub=false;
     int h_idx=-1;
     int Hub_info[100]={0};//which Hub it is connected to
-    int up=0; //whether to propagate value up or down
-    int down=0;
     bool affected=false; // whether the meta node is potentially in a SCC.
 };
 

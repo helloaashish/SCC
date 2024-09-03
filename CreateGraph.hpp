@@ -62,8 +62,60 @@ void check_file_open(char *graph_file, char *meta_graph, char *scc_ID, char *map
 }
 // *********************** END OF FUNCTION *******************************************************
 
+/** Store Information into MetaNode **/
+void meta_node_info(MetaNode *MN_list, int N, Graph *g_meta, Graph *gI_meta)
+{
+for(int i=0;i<N;i++)
+{
+//On Original Edges
+MN_list[i].in=g_meta->in_deg[i];
+MN_list[i].out=g_meta->out_deg[i];
+
+if(MN_list[i].out>0)
+{
+int fstart=g_meta->f_row_ptr[i];
+MN_list[i].fstart=fstart;
+MN_list[i].fend=g_meta->f_row_ptr[i+1];
+MN_list[i].fn1=g_meta->f_col_idx[fstart];//first fwd neighbor
+}
+
+if(MN_list[i].in>0)
+{
+int bstart=g_meta->b_row_ptr[i];
+MN_list[i].bstart=bstart;
+MN_list[i].bend=g_meta->b_row_ptr[i+1];
+MN_list[i].bn1I=g_meta->b_col_idx[bstart];//first bwd neighbor
+}
+
+
+//On Inserted Edges
+MN_list[i].inI=gI_meta->in_deg[i];
+MN_list[i].outI=gI_meta->out_deg[i];
+
+if(MN_list[i].outI>0)
+{
+int fstartI=gI_meta->f_row_ptr[i];
+MN_list[i].fstartI=fstartI;
+MN_list[i].fendI=gI_meta->f_row_ptr[i+1];
+MN_list[i].fn1I=gI_meta->f_col_idx[fstartI];//first fwd neighbor
+}
+
+
+if(MN_list[i].inI>0)
+{
+int bstartI=gI_meta->b_row_ptr[i];
+MN_list[i].bstartI=bstartI;
+MN_list[i].bendI=gI_meta->b_row_ptr[i+1];
+MN_list[i].bn1I=gI_meta->b_col_idx[bstartI];//first bwd neighbor
+}
+
+}//end of for	
+
+}
+// *********************** END OF FUNCTION *******************************************************
 
 // ******************************************************************************
+/** Create Graph from  Data **/
 void create_graph(int* src, int* dest, int* wt_list, int n, int m, Graph* graph){
     graph->f_col_idx = new int[m]();
     graph->b_col_idx = new int[m]();
@@ -81,7 +133,7 @@ void create_graph(int* src, int* dest, int* wt_list, int n, int m, Graph* graph)
 
    for (int i = 0; i<m; i++){
    if(src[i]==-1||dest[i]==-1){continue;} 
-    //printf("%d %d \n", src[i], dest[i]);
+    //printf("FXX===%d %d \n", src[i], dest[i]);
 	graph->in_deg[dest[i]]++;
         graph->out_deg[src[i]]++;
         graph->f_row_ptr[src[i]+1]++;
