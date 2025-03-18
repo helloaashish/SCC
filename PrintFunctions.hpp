@@ -62,46 +62,53 @@ void print_Hub_info(MetaNode*& MN_List,int node, int hubsize)
 
 
 
-// ******************************************************************************
-void print_meta_network(Graph* g,MetaNode*& MN_List, int graph_size,int*& Hubs, int hubsize)
-{
-    for (int i = 0; i<graph_size; i++)
-    {
-        //color("yellow");
-        printf("\nNode: %d ",i);
-               if(MN_List[i].trimmed){
-            //color("red");
-            printf(" TRIMMED!!!\n");
-            //color("reset");
-        }
-        if(!MN_List[i].trimmed){
-            //color("green");
-            printf("  NOT TRIMMED!!!\n");
-            //color("reset");
-        }
-        MN_List[i].is_hub? printf(" Hub %d\n",MN_List[i].h_idx):printf("Not Hub\n");
-        printf("Current SCC ID: %d \n", MN_List[i].currentID);
+// // ******************************************************************************
+// void print_meta_network(Graph* g,MetaNode*& MN_List, int graph_size,int*& Hubs, int hubsize)
+// {
+//     for (int i = 0; i<graph_size; i++)
+//     {
+//         //color("yellow");
+//         printf("\nNode: %d ",i);
+//                if(MN_List[i].trimmed){
+//             //color("red");
+//             printf(" TRIMMED!!!\n");
+//             //color("reset");
+//         }
+//         if(!MN_List[i].trimmed){
+//             //color("green");
+//             printf("  NOT TRIMMED!!!\n");
+//             //color("reset");
+//         }
+//         MN_List[i].is_hub? printf(" Hub %d\n",MN_List[i].h_idx):printf("Not Hub\n");
+//         printf("Current SCC ID: %d \n", MN_List[i].currentID);
 
-        printf("Children: ");
-        int_int c_range = g->get_children(i);
-        for (int c = c_range.first; c < c_range.second; c++)
-        {
-            printf("%d, ", g->f_col_idx[c]);
-        }
-        printf("\n Parents: ");
-        int_int p_range = g->get_parents(i);
-        for (int p = p_range.first; p < p_range.second; p++)
-        {
-            printf("%d, ", g->b_col_idx[p]);
-        }
-        printf("\n Hub Info : ");
-        for (int h = 0; h<hubsize; h++)
-        {
-            printf(" (%d->%d) \n", Hubs[h],MN_List[i].Hub_info[h]);
-        }
+//         printf("Children: ");
+//         int_int c_range = g->get_children(i);
+//         for (int c = c_range.first; c < c_range.second; c++)
+//         {
+//             printf("%d, ", g->f_col_idx[c]);
+//         }
+//         printf("\n Parents: ");
+//         int_int p_range = g->get_parents(i);
+//         for (int p = p_range.first; p < p_range.second; p++)
+//         {
+//             printf("%d, ", g->b_col_idx[p]);
+//         }
+//         printf("\n Hub Info : ");
+//         for (int h = 0; h<hubsize; h++)
+//         {
+//             printf(" (%d->%d) \n", Hubs[h],MN_List[i].Hub_info[h]);
+//         }
         
 
+//     }
+// }
+
+void printArray(int* a, int size) {
+    for (int i = 0; i < size; i++) {
+        cout << a[i] << " ";
     }
+    cout << endl;
 }
 
 // ******************************************************************************

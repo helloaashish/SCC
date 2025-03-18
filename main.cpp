@@ -9,92 +9,117 @@
 #include "ReadData.hpp"
 #include "SupportingFunctions.hpp"
 #include "PrintFunctions.hpp"
+#include "hinfo.h"
+#include <sys/time.h>
+#include <cstdint>
+
+#include<chrono>
+
 
 using namespace std;
 
 typedef pair<int,int> int_int;
 
-// #define DEBUG 
+#define VERBOSE 1 
+#define DEBUG 0
+
+const int IN = 1;
+const int AT = 3;
+const int OUT = 2;
+const int NOT = 0;
+
+
 
 int main(int argc, char *argv[]){
-    check_file_open(argv[1],argv[2],argv[3], argv[4], argv[5], argc);
+
+    // Incoming Files only MetaGraph, Changed Edges, Hubs_Count, Thread Count 
+    check_file_open(argv[1],argv[2],argc);
     int n,N,m,M; //number of nodes and metanodes
-    int hubsize = atoi(argv[6]);
-    int p = atoi(argv[7]); //number of threads
-
+    int hubsize = atoi(argv[3]);
+    int p = atoi(argv[4]); //number of threads
     double start_timer;
-
-    int *e_src, *e_dest, *e_wt, *m_src, *m_dest, *m_wt;
-    // bool *trimmed;
-    bool* insert_status;
-    bool* delete_status;
-
-    Graph g,g_meta;
-    vector<int> SCCx; //SCC IDs for graph nodes
-    unordered_map<int,int> sccMAP; //Mapping of SCCID from old to new 0 to N Continuous
-    vector<int_int> inserts, deletes;
-    vector<int> new_SCCx;
+    int *i_src, *i_dest, *i_wt, *m_src, *m_dest, *m_wt;
+    int len_inserts;
+    vector<int> Hubs;
+    Graph g_inserts,g_meta;
+    vector<int_int> inserts,deletes;
     inserts.clear();
-    deletes.clear();
-    int* Hubs;
     
 // ******************* READING FILES ****************************
     start_timer = omp_get_wtime();
-    // read_graph(argv[1], n,m, e_src, e_dest, e_wt, dummy_wt); //reading the graph data
-    read_graph(argv[1], n,m, e_src, e_dest, e_wt); //reading the metagraph data
-    read_graph(argv[2], N,M, m_src, m_dest, m_wt); //reading the metagraph data
-    read_scc(&SCCx,n,argv[3]);
-    read_sccmap(&sccMAP, argv[4]);
-    read_changes(&inserts, &deletes,argv[5]);
-    color("purple");
-    printf("\n Time for Reading: %f \n", (float)(omp_get_wtime()-start_timer));
-    color("reset");
+    // omp_set_nested(1); 
+  
+    read_graph(argv[1], N,M, m_src, m_dest, m_wt); //reading the metagraph data
+    read_inserts(argv[2],i_src,i_dest,i_wt,len_inserts);
+    // read_changes(&inserts, &deletes,argv[2]); // read_changes has deletes argument so keeping it for now
+    printf("Number of Nodes %d \n", N);
+    #if VERBOSE
+        color("purple");
+        printf("\n Time for Reading: %f \n", (float)(omp_get_wtime()-start_timer));
+        color("reset");
+    #endif
 // ******************* READING COMPLETED ****************************
 
-//   double s = omp_get_wtime();
-//   int ret = system("awk 'NR==FNR { lines[NR-1] = $0; next } { if (FNR <= length(lines)) { $1 = lines[$1]; $2 = lines[$2] } }' /home/users/apandey/SCC-new/Examples/xbaidu /home/users/apandey/SCC-new/Examples/baidu_1M_25T");
-//       color("red");
-//     printf("\n Time for Creating shell: %f \n", (float)(omp_get_wtime()-s));
-//     color("reset");
-
-
 // // ******************* CREATING GRAPHS ****************************
-
-    double st =omp_get_wtime();
-    create_graph(e_src,e_dest,e_wt,n,m,&g); //GRAPH
+    printf("Requested number of hubs and threads %d and %d\n", hubsize,p);
+    // double st =omp_get_wtime();
+    // // create_graph(e_src,e_dest,e_wt,n,m,&g); //GRAPH
+    start_timer = omp_get_wtime();
     create_graph(m_src,m_dest,m_wt,N,M,&g_meta); //METAGRAPH
-    color("purple");
-    printf("\n Time for Creating graph: %f \n", (float)(omp_get_wtime()-st));
-    color("reset");
+    create_graph(i_src,i_dest,i_wt,N,len_inserts,&g_inserts);
+    #if VERBOSE
+        color("purple");
+        printf("\n Time for Creating graph: %f \n", (float)(omp_get_wtime()-start_timer));
+        color("reset");
+        printf("Graph: Nodes %d Edges %d \n",N,M);
+        printf("Inserts: Nodes %d Edges %d \n",N,len_inserts);
+    #endif
 // // ******************* CREATING GRPAHS COMPLETED **************************** 
 
+    // #if DEBUG
+    //     printf("Printing Insert Graph! ");
+    //     printArray(g_inserts.f_row_ptr, N+1);
+    //     printArray(g_inserts.f_col_idx,len_inserts);
+    //#endif
+    // int* MN_list = new int[N];
+    //      printf("Printing Meta Graph! ");
+    //     printArray(g_meta.f_row_ptr, N+1);
+    //     printArray(g_meta.f_col_idx,M);
 
+    //     printf("Printing Inserted Edges! ");
+    //     printArray(i_src, len_inserts);
+    //     printArray(i_dest,len_inserts);
+    // #endif
 //Creating MetaNode Array for Hub Infornmation
+
+// vector<MetaNode>* MN_lists;
+// MN_lists = new vector<MetaNode> {N,MetaNode(N)};
+// bool* is_hub = new bool[N]{false};
 MetaNode* MN_list = new MetaNode[N];
-#pragma omp parallel for num_threads(p) schedule(dynamic)
-for (int mn = 0; mn<N; mn++){
-    MN_list[mn].Hub_info=new int[hubsize]{0}; //initialize all hubs as zero
-    MN_list[mn].currentID = mn; //current value of SCC
-    MN_list[mn].is_hub = false; //boolean to denote if Metanode is a hub
-    MN_list[mn].h_idx = -1; // initialize -1 for h_idx
-    MN_list[mn].trimmed = true;
-}
 
-
-// ******************* FINDING HUBS ****************************
-bool* propagate_changed_up = new bool[N]{false};
-bool* propagate_changed_down = new bool[N]{false};
-bool* p_up = new bool[N]{false};
-bool* p_down = new bool[N]{false};
-st = omp_get_wtime();
-find_hubs(&g, &g_meta,MN_list, &SCCx, propagate_changed_up, propagate_changed_down,Hubs, n,N, hubsize,p);
+// // // ******************* FINDING HUBS ****************************
+start_timer = omp_get_wtime();
+get_hubs(&g_meta,&g_inserts,MN_list,N,&Hubs,hubsize,p);
+// find_hubs(&g, &g_meta,MN_list, &SCCx, propagate_changed_up, propagate_changed_down,Hubs, n,N, hubsize,p);
+initialize_labels(&g_meta,MN_list,N,&Hubs, hubsize, p);
+// collect_labels(&g_meta, &g_inserts,MN_list, N,&Hubs,hubsize,p);
+float c = (float)(omp_get_wtime()-start_timer);
 color("purple");
-printf("\n Time for Finding Hubs: %f \n", (float)(omp_get_wtime()-st));
+printf("\n Time for Finding Hubs: %f \n", c);
 color("reset");
-print_meta_network(&g_meta, MN_list, N, Hubs, hubsize);
-// // ******************* FINDING HUBS COMPLETED ****************************
 
+printf("Hub info for node %d is %d \n",16,get_value(*MN_list[16].Hub_info,0));
+printf("Hub info for node %d is %d\n",17,get_value(*MN_list[17].Hub_info,0));
+printf("Hub info for node %d is %d\n",18,get_value(*MN_list[7].Hub_info,0));
 
+// printf("Hub info for node %d is %d \n",16,MN_list[16].H_info[0]);
+// printf("Hub info for node %d is %d\n",17,MN_list[17].H_info[0]);
+// printf("Hub info for node %d is %d\n",18,MN_list[7].H_info[0]);
+// delete MN_list;
+// delete MN_lists;
+// // // ******************* FINDING HUBS COMPLETED ****************************
+
+// ******************* Initialize Labels and propagate ****************************
 
 
 /*
@@ -160,6 +185,7 @@ printf("Count of  completed inserts after convert changes: %d\n",count_true(inse
 // // ******************* UPDATING PROPERTY COMPLETED ****************************
 
 */
+
     return 0;
 }
 

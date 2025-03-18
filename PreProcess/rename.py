@@ -9,11 +9,11 @@ n m
 import networkx as nx
 import sys
 
-input_filepath = "/work/08434/apandey/ls6/SCC-new/Datasets/OriginalDataset/"
-output_filepath = "/work/08434/apandey/ls6/SCC-new/Datasets/OriginalReady/"
+# input_filepath = "/work/08434/apandey/ls6/SCC-new/Datasets/OriginalDataset/"
+# output_filepath = "/work/08434/apandey/ls6/SCC-new/Datasets/OriginalReady/"
 # Renames the graph file to make it 0-vertexed and continuing name of nodes
 filename = sys.argv[1]
-data = open(input_filepath+filename,"r")
+data = open(filename,"r")
 
 graph = nx.parse_edgelist(data,delimiter = ' ', create_using=nx.DiGraph(), nodetype = int)
 reindexed_graph = nx.relabel.convert_node_labels_to_integers(graph, first_label=0, ordering='default')
@@ -22,7 +22,7 @@ m = reindexed_graph.number_of_edges()
 # print("Original Graph: ",graph.number_of_nodes(), " Reindexed Graph: ",n)
 # print("Original Graph: ",graph.number_of_edges(), " Reindexed Graph: ",m)
 
-with open(output_filepath+filename, 'w') as f:
+with open("renamed_"+filename, 'w') as f:
     f.write(str(n)+" "+str(m)+"\n")
     for a,b in reindexed_graph.edges:
         f.write(str(a)+" "+str(b)+" "+"1\n")

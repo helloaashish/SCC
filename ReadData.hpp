@@ -71,18 +71,12 @@ void read_changes(vector<int_int> *inserts, vector<int_int> *deletes, char* myfi
             inserts->push_back(ID_edge);
         } 
     } // end of while
-
-    // printf("\n Deleted Edges which are Key Edges: %d ",key_deleted);
-    // printf("\n Deleted Edges which are Not Key Edges: %d ",not_key_deleted);
-    // printf("\n Inserted Edges on Same SCC: %d ",same_inserted);
-    // printf("\n Inserted Edges on different SCC: %d ",different_inserted);
-
     fclose(graph_file);
 }
 // ******************************************************************************
 
 // ******************************************************************************
-void read_graph(char* file,int& n, int&m, int*& srcA, int*& destA, int*& weightsA, int active){
+void read_graph(char* file, int& n, int&m, int*& srcA, int*& destA, int*& weightsA, int active){
     ifstream File(file);
     if(!File.is_open()){printf("ERROR OPENING FILE");}
     else{
@@ -105,6 +99,39 @@ void read_graph(char* file,int& n, int&m, int*& srcA, int*& destA, int*& weights
 // ******************************************************************************
 
 // ******************************************************************************
+void read_inserts(const char* file, int*& srcA, int*& destA, int*& weightsA, int& m) {
+    ifstream File(file);
+    if (!File.is_open()) {
+        printf("ERROR OPENING FILE\n");
+        return;
+    }
+
+    vector<int> src, dest, weights;
+
+    int u, v, w;
+    while (File >> u >> v >> w) {  // Read file in a single pass
+        src.push_back(u);
+        dest.push_back(v);
+        weights.push_back(w);
+    }
+    File.close();
+
+    // Get total count
+    m = src.size();
+
+    // Allocate memory and copy data
+    srcA = new int[m];
+    destA = new int[m];
+    weightsA = new int[m];
+
+    copy(src.begin(), src.end(), srcA);
+    copy(dest.begin(), dest.end(), destA);
+    copy(weights.begin(), weights.end(), weightsA);
+}
+// ******************************************************************************
+
+
+// ******************************************************************************
 void read_graph(char* file,int& N, int&M, int*& srcA, int*& destA, int*& weightsA){
     ifstream File(file);
     if(!File.is_open()){printf("ERROR OPENING FILE");}
@@ -125,70 +152,6 @@ void read_graph(char* file,int& N, int&M, int*& srcA, int*& destA, int*& weights
 }
 // ******************************************************************************
 
-
-// ******************************************************************************
-void X_read_graph(char* file,int& n, int&m, vector<int_int>* edgelist, vector<int>* weights, int active){
-    ifstream File(file);
-    if(!File.is_open()){printf("ERROR OPENING FILE");}
-    else{
-        // int m;
-        File >> n >>m;
-        edgelist->resize(m);
-        weights->resize(m);
-        for (int i =0; i<m; i++){
-            File>>edgelist->at(i).first >> edgelist->at(i).second;
-            weights->at(i) = 1;
-        }
-    }
-}
-// ******************************************************************************
-
-// ******************************************************************************
-void X_read_graph(char* file,int& N,int& M, vector<int_int>* edgelist, vector<int>* wt_list){
-    ifstream File(file);
-    if(!File.is_open()){printf("ERROR OPENING FILE");}
-    else{
-        int wt;
-        File >> N >>M;
-        edgelist->resize(M);
-        wt_list->resize(M);
-        for (int i =0; i<M; i++){
-            File>>edgelist->at(i).first >> edgelist->at(i).second >> wt_list->at(i);
-
-        }
-    }
-}
-// ******************************************************************************
-
-// ******************************************************************************
-void X_read_AllGraphs(char* file, int& N, vector<int_int>* edgelist, vector<int>* wt_list) {
-    ifstream File(file);
-
-    if (!File.is_open()) {
-        printf("ERROR OPENING FILE");
-    } else {
-        int m;
-        File >> N >> m;
-        edgelist->resize(m);
-        wt_list->resize(m);
-
-        for (int i = 0; i < m; i++) {
-            File >> edgelist->at(i).first >> edgelist->at(i).second;
-
-            // Check if there is a third column (weight)
-            if (File.peek() == '\n' ||File.peek() == ' ' || File.peek() == EOF) {
-                // If the next character is a newline or end of file, default the weight to 1
-                  wt_list->at(i) = 1;
-            } else {
-                // Default the weight to 1 if not present
-              
-                File>>wt_list->at(i);
-                // Clear the failbit to avoid issues in subsequent iterations
-                File.clear();
-            }
-        }
-        }
-}
 // ******************************************************************************
 #endif
 

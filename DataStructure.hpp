@@ -65,61 +65,42 @@ struct Graph{
 };
 // ******************************************************************************
 
-
 // ******************************************************************************
-struct X_Graph{
-    vector<int> f_row_ptr; //forward row pointer for forward relations
-    vector<int> f_col_idx; //colume vector for edges forward
-    vector<int> b_row_ptr; // backward row pointer for backward edges
-    vector<int> b_col_idx; // backward row pointer for backward edges
-    vector<int> edge_wt; //edge weight will be 1 for active edges; 
-                        // in case of metagraph, the edge_wt shows the number of links between each metagraph.
 
-    int_int get_children(int n){
-        int start,end;
-        start = f_row_ptr.at(n);
-        end = f_row_ptr.at(n+1);
-        return {start,end};
-    }
-    int_int get_parents(int n){
-        int start,end;
-        start = b_row_ptr.at(n);
-        end = b_row_ptr.at(n+1);
-        return {start,end};
-    }
-
-    int num_parents(int n){return b_row_ptr.at(n+1) - b_row_ptr.at(n);}
-
-    int num_childrens(int n){return f_row_ptr.at(n+1) - f_row_ptr.at(n);}
-
-    int num_nodes(){return f_row_ptr.size()-1;}
-    int num_edges(){return f_col_idx.size();}
-
-    void print_graph(){
-        for (int node = 0; node<num_nodes(); node++)
-        {
-            int_int range_childern = get_children(node);
-            int_int range_parents = get_parents(node);
-            printf("***** NODE: %d *****\n", node);
-            for (int i = range_childern.first; i<range_childern.second; i++){
-                printf(" ---> %d (%d) \n",f_col_idx.at(i),edge_wt.at(i));
-            }
-            for (int i = range_parents.first; i<range_parents.second; i++){
-                printf(" <--- %d\n",b_col_idx.at(i));
-            }
-
-        }
-    }
-};
 // ******************************************************************************
 
 
 
 struct MetaNode{
-    bool trimmed;
+    bool trimmed=true;
     int currentID;
     bool is_hub;
     int h_idx;
-    int* Hub_info;
+    // vector <uint8_t> *Hub_info = new vector<uint8_t>(5,0); 
+    vector <uint8_t> *Hub_info = new vector<uint8_t>(100,0); 
+    // vector<int> H_info = std::vector<int>(5, 0);
+    // vector<int> * update_addr;
+    // vector<int>* Hub_info=nullptr;
 };
+
+
+// struct MetaNode {
+//     bool trimmed = true;
+//     int currentID = 0;
+//     bool is_hub = false;
+//     int h_idx = -1;
+//     std::vector<uint8_t> *Hub_info;
+
+//     // Constructor to initialize Hub_info with size k
+//     MetaNode(int k) : Hub_info(new std::vector<uint8_t>(k, 0)) {}
+//         // Default constructor with Hub_info as nullptr
+//     MetaNode() : Hub_info(nullptr) {}
+//     // Destructor to clean up allocated memory
+//     ~MetaNode() {
+//         delete Hub_info;
+//     }
+// };
+
+
+
 #endif

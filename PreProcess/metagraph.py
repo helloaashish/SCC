@@ -21,20 +21,21 @@ import networkx as nx
 import sys
 
 filename = sys.argv[1]
+scc_path = "sccx_"+filename
 
-graph_path = "/work/08434/apandey/ls6/SCC-new/Datasets/OriginalReady/"
-scc_path = "/work/08434/apandey/ls6/SCC-new/Datasets/SCCx/"
+# graph_path = "/work/08434/apandey/ls6/SCC-new/Datasets/OriginalReady/"
+# scc_path = "/work/08434/apandey/ls6/SCC-new/Datasets/SCCx/"
 
-map_path = "/work/08434/apandey/ls6/SCC-new/Datasets/Map/"
-metagraph_path = "/work/08434/apandey/ls6/SCC-new/Datasets/Metagraphs/"
+# map_path = "/work/08434/apandey/ls6/SCC-new/Datasets/Map/"
+# metagraph_path = "/work/08434/apandey/ls6/SCC-new/Datasets/Metagraphs/"
 
 
 #create Graph form file
-with open(graph_path+filename) as file:
+with open(filename) as file:
     #meta_info = file.readline()  # Read the first line (meta information)
     edges = file.readlines()     # Read the remaining lines (edges)
 
-with open(scc_path+filename) as sccfile:
+with open(scc_path) as sccfile:
     SCCx = sccfile.readlines()
     SCCx =[int(a) for a in SCCx]
 
@@ -60,13 +61,13 @@ nodelist.sort()
 mapping = {old_label:new_label for new_label, old_label in enumerate(nodelist)}
 relabeled_meta_network = nx.relabel_nodes(meta_network, mapping)
 
-with open(metagraph_path+filename, 'w') as graphfile:
+with open("metagraph_"+filename, 'w') as graphfile:
     graphfile.write("{} {}\n".format(relabeled_meta_network.number_of_nodes(), relabeled_meta_network.number_of_edges())) 
     for edge in relabeled_meta_network.edges():
         graphfile.write("{} {} {}\n".format(edge[0],edge[1],1))
     
 
 
-with open(map_path+filename,'w') as file:
+with open("metavertex_map_"+filename,'w') as file:
     for key, value in mapping.items():
         file.write("{} {}\n".format(key, value))
